@@ -6,16 +6,18 @@ from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
 # %matplotlib inline
 
-bankdata = pd.read_csv("./bill_authentication.csv")
+data = pd.read_csv("./bill_authentication.csv")
+# data = pd.read_csv("./Datasets/Leukemia/Leukemia.txt", sep='\t')
 
-# bankdata = pd.read_csv("./Datasets/Leukemia/Leukemia.txt") -- nie dziala :/
+# zapisane ze srednikami jako separator i nazwa komorki zmieniona na Class
+data = pd.read_csv("./Leukemia_class.csv").transpose()
 
-# print(bankdata)
-# print(bankdata.shape)
-# print(bankdata.head())
+# print(data)
+# print(data.shape)
+# print(data.head())
 
-X = bankdata.drop('Class', axis=1)
-y = bankdata['Class']
+X = data.drop(0, axis=1)
+y = data[0][1:]
 print(y)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
