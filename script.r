@@ -1,58 +1,35 @@
-#import the package
-# library(randomForest)
 library(e1071)
+DATA <- read.csv("Datasets/Peptidome1/Peptidome1.txt", sep="\t", header=FALSE)
+DATA <- as.data.frame(t(as.matrix(DATA)))
+CRITERIA <- DATA[c(1),-c(1:2)]
+DATA <- DATA[-c(1), -c(1)]
 
-data <- read.csv("./Datasets/Peptidome1/Peptidome1.txt", sep="\t", header=FALSE)
-data <- as.data.frame(t(as.matrix(data)))
-data <- data[-c(1), -c(1)]
-nrow(data)
-ncol(data)
-length(data)
+x <- data.matrix(DATA[,-c(1)])
+# print(x)
+y <- as.integer(data.matrix(DATA[,c(1)]))
 
-# data <- subset(data, select = -c(enrollee_id))
+y[y==2]=-1
 
-# # Set random seed to make results reproducible:
-# set.seed(17)
-# # Calculate the size of each of the data sets:
-# data_set_size <- floor(nrow(data)/2)
-# # Generate a random sample of "data_set_size" indexes
-# indexes <- sample(1:nrow(data), size = data_set_size)
-# # Assign the data to the correct sets
-# training <- data[indexes,]
-# validation1 <- data[-indexes,]
+n_train  <-  round(0.8*nrow(x))
+x_train  <-  x[c(0:n_train),]
+x_test   <-  x[-c(0:n_train),]
+y_train  <-  y[c(0:n_train)]
+y_test   <-  y[-c(0:n_train)]
 
-# print(training)
+p <- length(CRITERIA)
 
-# # Perform training:
-# rf_classifier = randomForest(target ~ ., data=training, ntree=100, mtry=10, importance=TRUE)
-
-# dat = data.frame(x, y = as.factor(y))
-
-# svmfit = svm(V2 ~ .,data, kernel = "linear", cost = 10, scale = FALSE)
+RANK <- data.frame(c(1:(length(CRITERIA)-1)))
 
 
+while(p>=1){
+  model <- svm(x_train, y_train, kernel = "linear", scale=FALSE)
+  rank_criteria <- model[["decision.values"]]^2
+  min_index <- which.min(rank_criteria)
 
-indx <- sapply(data, is.factor)
-data[indx] <- lapply(data[indx], function(x) as.numeric(as.character(x)))
+  RANK[p,1] <- min_index
+  RANK[p,2] <- CRITERIA[min_index]
 
-x <- subset(data, select = -V2)
-y <- data$V2
-model <- svm(x, y)
-print(model)
-
-# test with train data
-pred <- predict(model, x)
-# (same as:)
-# pred <- fitted(model)
-
-# Check accuracy:
-table(pred, y)
-
-# compute decision values and probabilities:
-pred <- predict(model, x, decision.values = TRUE)
-attr(pred, "decision.values")[1:4,]
-
-# # visualize (classes by color, SV by crosses):
-# plot(cmdscale(dist(iris[,-5])),
-#      col = as.integer(iris[,5]),
-#      pch = c("o","+")[1:150 %in% model$index + 1])
+  
+  x_train <- x_train[,-c(min_index)]
+  p <- p-1
+}
