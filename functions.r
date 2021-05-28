@@ -1,19 +1,28 @@
 library(e1071)
 
 SVMRFE <- function(x, y, CRITERIA) {
-    RANK <- data.frame(c(1:(length(CRITERIA)-1)))
-    p <- length(CRITERIA)
-    while (p >= 1) {
-        model <- svm(x, y, kernel = "linear", scale=FALSE)
-        rank_criteria <- model[["decision.values"]]^2
-        min_index <- which.min(rank_criteria)
-
-        RANK[p, 1] <- min_index
-        RANK[p, 2] <- CRITERIA[min_index]
+    
+    RANK <- data.frame(c(1:(length(CRITERIA))))
+    p <- ncol(CRITERIA)
+    
+    x_svm = x
+    CRITERIA_SVM = CRITERIA
+    while (p >= 2) {
+        model <- svm(x_svm, y, kernel = "linear", scale=FALSE)
+        beta = drop(t(model$coefs)%*%x_svm[model$index,])
+        beta0 = model$rho
         
-        x <- x[,-c(min_index)]
+        rank_criteria <- beta^2
+        min_index <- which.min(rank_criteria)
+        
+        RANK[p, 1] <- CRITERIA_SVM[min_index]
+        CRITERIA_SVM = CRITERIA_SVM[,-c(min_index)]
+        x_svm <- x_svm[,-c(min_index)]
         p <- p - 1
+        
     }
+    RANK[1, 1] <- CRITERIA_SVM[1]
+    
     return (RANK)
 }
 
@@ -31,11 +40,12 @@ FScoreSelection <- function(x, y, CRITERIA) {
             bestIndices <- c(bestIndices, col)
         }
     }
-    # print(length(CRITERIA))
+    #print(length(CRITERIA))
     # print(length(fscores))
     # df <- data.frame(CRITERIA, fscores)
     # print(order(fscores))
     hist(fscores)
     hist(bestFscores)
+    print(CRITERIA[bestIndices])
     return (CRITERIA[bestIndices])
 }
