@@ -4,6 +4,7 @@ SVMRFE <- function(x, y, CRITERIA) {
     
     RANK <- data.frame(c(1:(length(CRITERIA))))
     p <- ncol(CRITERIA)
+
     
     x_svm = x
     CRITERIA_SVM = CRITERIA
@@ -21,8 +22,8 @@ SVMRFE <- function(x, y, CRITERIA) {
         p <- p - 1
         
     }
+
     RANK[1, 1] <- CRITERIA_SVM[1]
-    
     return (RANK)
 }
 
@@ -30,22 +31,22 @@ FScoreSelection <- function(x, y, CRITERIA) {
     fscores <- c()
     bestFscores <- c()
     bestIndices <- c()
+    # RANK <- data.frame(c(1:(length(CRITERIA))))
     for(col in 1:ncol(x)) {
         x1 = x[which(y == 1), col]
         x0 = x[which(y == -1), col]
         fscore = abs(mean(x0) - mean(x1))/sqrt(var(x0) + var(x1))
-        fscores <- c(fscores, fscore)
-        if (fscore > 2.0) {         # potem to bedzie lepiej rozwiazane
-            bestFscores <- c(bestFscores, fscore)
-            bestIndices <- c(bestIndices, col)
-        }
+        fscores <- append(fscores, fscore)
+
+        # if (fscore > 2.0) {         # potem to bedzie lepiej rozwiazane
+        #     bestFscores <- c(bestFscores, fscore)
+        #     bestIndices <- c(bestIndices, col)
+        # }
+        # else {
+
+        # }
     }
-    #print(length(CRITERIA))
-    # print(length(fscores))
-    # df <- data.frame(CRITERIA, fscores)
-    # print(order(fscores))
-    hist(fscores)
-    hist(bestFscores)
-    print(CRITERIA[bestIndices])
-    return (CRITERIA[bestIndices])
+    df <- data.frame(fscores, t(CRITERIA))
+    df <- df[order(-fscores),]
+    return (df)
 }
