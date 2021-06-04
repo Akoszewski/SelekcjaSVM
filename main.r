@@ -13,7 +13,7 @@ y <- as.integer(data.matrix(DATA[,c(1)]))
 #norm_minmax = norm_minmax(x)
 
 
-#to trzeba poprawic rzeby wybiera³o losowo jeszcze na razie dzia³ajmy na ca³ym x
+#to trzeba poprawic rzeby wybieraï¿½o losowo jeszcze na razie dziaï¿½ajmy na caï¿½ym x
 #n_train  <-  round(0.8*nrow(x))
 #x_train  <-  x[c(0:n_train),]
 #x_test   <-  x[-c(0:n_train),]
@@ -24,6 +24,6 @@ RANK_return = SVM_RFE(x, y, CRITERIA)
 
 
 
-
-#FScoreSelection(x_train, y_train, CRITERIA)
-# print(fscores)
+# svmres = SVMRFE(x_train, y_train, CRITERIA)
+fscores = FScoreSelection(x_train, y_train, CRITERIA)
+print(fscores)
