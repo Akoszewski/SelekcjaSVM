@@ -33,10 +33,9 @@ FScoreSelection <- function(x, y, CRITERIA) {
     # RANK <- data.frame(c(1:(length(CRITERIA))))
     for(col in 1:ncol(x)) {
         x1 = x[which(y == 1), col]
-        x0 = x[which(y == -1), col]
+        x0 = x[which(y == 2), col]
         fscore = abs(mean(x0) - mean(x1))/sqrt(var(x0) + var(x1))
         fscores <- append(fscores, fscore)
-
         # if (fscore > 2.0) {         # potem to bedzie lepiej rozwiazane
         #     bestFscores <- c(bestFscores, fscore)
         #     bestIndices <- c(bestIndices, col)

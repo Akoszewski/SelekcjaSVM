@@ -21,9 +21,10 @@ y <- as.integer(data.matrix(DATA[,c(1)]))
 #y_test   <-  y[-c(0:n_train)]
 
 RANK_return = SVM_RFE(x, y, CRITERIA)
+print(RANK_return)
 
-
-
-# svmres = SVMRFE(x_train, y_train, CRITERIA)
-fscores = FScoreSelection(x_train, y_train, CRITERIA)
+fscores = FScoreSelection(x, y, CRITERIA)
 print(fscores)
+
+# print(fscores)
+
