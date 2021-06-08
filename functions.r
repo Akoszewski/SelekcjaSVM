@@ -67,7 +67,7 @@ GetAccuracy <- function(prediction) {
     return (correct_vals/nrow(prediction))
 }
 
-GetAccForBestFeatures <- function(x, y, noOfFeatures) {
+GetAccForBestFeatures <- function(x, y, fscores, noOfFeatures) {
     bestFeatures <- fscores[1:noOfFeatures,]
     DATA_F <- DATA[bestFeatures$Criteria]
 

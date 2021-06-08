@@ -13,35 +13,25 @@ x <- apply(as.matrix(DATA[,-c(1)]), 2, as.numeric)
 y <- as.integer(data.matrix(DATA[,c(1)]))
 #y[c(1:5)]=3
 
-
-
 #norm_minmax = norm_minmax(x)
 
-
-#to trzeba poprawic rzeby wybiera�o losowo jeszcze na razie dzia�ajmy na ca�ym x
-n_train  <-  round(0.6*nrow(x))
-x_train  <-  x[c(0:n_train),]
-x_test   <-  x[-c(0:n_train),]
-y_train  <-  y[c(0:n_train)]
-y_test   <-  y[-c(0:n_train)]
-
-# RANK_return = SVM_RFE(x, y, CRITERIA)
+RANK_return = SVM_RFE(x, y, CRITERIA)
 # print(RANK_return)
 
 fscores = FScoreSelection(x, y, CRITERIA)
 
 print('For best features:')
-accuracy <- GetAccForBestFeatures(x, y, 10)
-accuracy <- GetAccForBestFeatures(x, y, 100)
-accuracy <- GetAccForBestFeatures(x, y, 500)
-accuracy <- GetAccForBestFeatures(x, y, nrow(fscores))
+accuracy <- GetAccForBestFeatures(x, y, fscores, 10)
+accuracy <- GetAccForBestFeatures(x, y, fscores, 100)
+accuracy <- GetAccForBestFeatures(x, y, fscores, 500)
+accuracy <- GetAccForBestFeatures(x, y, fscores, nrow(fscores))
 print('')
 print('For random features:')
 fscores <- fscores[sample(nrow(fscores)),]
-accuracy <- GetAccForBestFeatures(x, y, 10)
-accuracy <- GetAccForBestFeatures(x, y, 100)
-accuracy <- GetAccForBestFeatures(x, y, 500)
-accuracy <- GetAccForBestFeatures(x, y, nrow(fscores))
+accuracy <- GetAccForBestFeatures(x, y, fscores, 10)
+accuracy <- GetAccForBestFeatures(x, y, fscores, 100)
+accuracy <- GetAccForBestFeatures(x, y, fscores, 500)
+accuracy <- GetAccForBestFeatures(x, y, fscores, nrow(fscores))
 
 # # y[y == 2] <- 1
 # fscores2 <- do.fscore(
