@@ -36,15 +36,9 @@ FScoreSelection <- function(x, y, CRITERIA) {
         x0 = x[which(y == 2), col]
         fscore = abs(mean(x0) - mean(x1))/sqrt(var(x0) + var(x1))
         fscores <- append(fscores, fscore)
-        # if (fscore > 2.0) {         # potem to bedzie lepiej rozwiazane
-        #     bestFscores <- c(bestFscores, fscore)
-        #     bestIndices <- c(bestIndices, col)
-        # }
-        # else {
-
-        # }
     }
     df <- data.frame(fscores, t(CRITERIA))
     df <- df[order(-fscores),]
+    colnames(df) <- c('Fscores', 'Criteria')
     return (df)
 }
