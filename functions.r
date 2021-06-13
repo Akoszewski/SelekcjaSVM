@@ -1,9 +1,10 @@
 library(e1071)
 
 SVM_RFE <- function(x, y, CRITERIA) {
-    Rank <- data.frame(c(1:(length(CRITERIA))))
+    # Rank <- data.frame(c(1:(length(CRITERIA))))
+    rank <- c()
     p <- ncol(CRITERIA)
-        x_svm = x
+    x_svm = x
     CRITERIA_SVM = CRITERIA
     y_svm = y
     while (p >= 2) {
@@ -17,13 +18,17 @@ SVM_RFE <- function(x, y, CRITERIA) {
         }
         rank_criteria_average = rank_criteria/y[which.max(y)]
         min_index <- which.min(rank_criteria_average)
-        Rank[p, 1] <- CRITERIA_SVM[min_index]
+        # Rank[p, 1] <- t(CRITERIA_SVM[min_index])
+        rank <- c(t(CRITERIA_SVM[min_index]), rank)
         CRITERIA_SVM = CRITERIA_SVM[,-c(min_index)]
         x_svm <- x_svm[,-c(min_index)]
         p <- p - 1
     }
-    Rank[1, 1] <- CRITERIA_SVM[1]
-    return (Rank)
+    #Rank[1, 1] <- CRITERIA_SVM[1]
+    
+    df <- data.frame(rank)
+    colnames(df) <- c('Criteria')
+    return (df)
 }
 
 FScoreSelection <- function(x, y, CRITERIA) {
@@ -67,9 +72,9 @@ GetAccuracy <- function(prediction) {
     return (correct_vals/nrow(prediction))
 }
 
-GetAccForBestFeatures <- function(x, y, fscores, noOfFeatures) {
-    bestFeatures <- fscores[1:noOfFeatures,]
-    DATA_F <- DATA[bestFeatures$Criteria]
+GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
+    bestFeatures <- bestFeatures[1:noOfFeatures]
+    DATA_F <- DATA[bestFeatures]
 
     x <- apply(as.matrix(DATA_F[,-c(1)]), 2, as.numeric)
 

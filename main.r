@@ -18,20 +18,22 @@ y <- as.integer(data.matrix(DATA[,c(1)]))
 RANK_return = SVM_RFE(x, y, CRITERIA)
 # print(RANK_return)
 
+
+
 fscores = FScoreSelection(x, y, CRITERIA)
 
 print('For best features:')
-accuracy <- GetAccForBestFeatures(x, y, fscores, 10)
-accuracy <- GetAccForBestFeatures(x, y, fscores, 100)
-accuracy <- GetAccForBestFeatures(x, y, fscores, 500)
-accuracy <- GetAccForBestFeatures(x, y, fscores, nrow(fscores))
+accuracy <- GetAccForBestFeatures(x, y, fscores$Criteria, 10)
+accuracy <- GetAccForBestFeatures(x, y, fscores$Criteria, 100)
+accuracy <- GetAccForBestFeatures(x, y, fscores$Criteria, 500)
+accuracy <- GetAccForBestFeatures(x, y, fscores$Criteria, nrow(fscores))
 print('')
 print('For random features:')
-fscores <- fscores[sample(nrow(fscores)),]
-accuracy <- GetAccForBestFeatures(x, y, fscores, 10)
-accuracy <- GetAccForBestFeatures(x, y, fscores, 100)
-accuracy <- GetAccForBestFeatures(x, y, fscores, 500)
-accuracy <- GetAccForBestFeatures(x, y, fscores, nrow(fscores))
+fscores_shuffled <- fscores[sample(nrow(fscores)),]
+accuracy <- GetAccForBestFeatures(x, y, fscores_shuffled$Criteria, 10)
+accuracy <- GetAccForBestFeatures(x, y, fscores_shuffled$Criteria, 100)
+accuracy <- GetAccForBestFeatures(x, y, fscores_shuffled$Criteria, 500)
+accuracy <- GetAccForBestFeatures(x, y, fscores_shuffled$Criteria, nrow(fscores_shuffled))
 
 # # y[y == 2] <- 1
 # fscores2 <- do.fscore(
