@@ -26,6 +26,7 @@ SVM_RFE <- function(x, y, CRITERIA) {
         p <- p - 1
     }
     #Rank[1, 1] <- CRITERIA_SVM[1]
+    #rank <- c(CRITERIA_SVM[1], t(CRITERIA_SVM[min_index]))
     
     df <- data.frame(rank)
     colnames(df) <- c('Criteria')

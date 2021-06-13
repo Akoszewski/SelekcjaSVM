@@ -16,7 +16,7 @@ y <- as.integer(data.matrix(DATA[,c(1)]))
 
 #norm_minmax = norm_minmax(x)
 
-#RANK_return = SVM_RFE(x, y, CRITERIA)
+RANK_return = SVM_RFE(x, y, CRITERIA)
 # print(RANK_return)
 
 #accuracySVM <- GetAccForBestFeatures(x, y, RANK_return$Criteria, 10)
@@ -24,15 +24,18 @@ y <- as.integer(data.matrix(DATA[,c(1)]))
 fscores = FScoreSelection(x, y, CRITERIA)
 fscores_shuffled <- fscores[sample(nrow(fscores)),]
 
-accuraciesDf <- GetAllAccuracies(fscores)
-accuraciesRandomDf <- GetAllAccuracies(fscores_shuffled)
+accuracies <- GetAllAccuracies(fscores)
+accuraciesRandom <- GetAllAccuracies(fscores_shuffled)
+accuraciesSVM <- GetAllAccuracies(RANK_return)
+
 
 wykres = ggplot() + 
-   geom_line(data = accuraciesDf, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies fscore")) +
-   geom_line(data = accuraciesRandomDf, aes(x = LabelledDataSize, y = Accuracy, colour = "Accuracies random")) +
+   geom_line(data = accuracies, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies fscore")) +
+   geom_line(data = accuraciesRandom, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies random")) +
+   geom_line(data = accuraciesSVM, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies SVM")) +
    xlab('Number of features') +
    ylab('Accuracy') + 
-   labs(title="Fscore accuracy according to no of features")
+   labs(title="Accuracy according to no of features")
 
 print(wykres)
 # # y[y == 2] <- 1
