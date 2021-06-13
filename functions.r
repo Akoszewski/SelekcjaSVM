@@ -9,6 +9,9 @@ SVM_RFE <- function(x, y, CRITERIA) {
     y_svm = y
     while (p >= 2) {
         rank_criteria = matrix(0, 1, ncol(CRITERIA_SVM))
+        if (p %% 50 == 0) {
+            print(paste("SVMRFE in progress p =", p))
+        }
         for (i in seq(y[which.max(y)])){ 
             y_svm[y==i] = 1
             y_svm[y!=i] = -1
@@ -25,8 +28,8 @@ SVM_RFE <- function(x, y, CRITERIA) {
         x_svm <- x_svm[,-c(min_index)]
         p <- p - 1
     }
-    #Rank[1, 1] <- CRITERIA_SVM[1]
-    #rank <- c(CRITERIA_SVM[1], t(CRITERIA_SVM[min_index]))
+    
+    rank <- c(as.character(CRITERIA_SVM[1]), rank)
     
     df <- data.frame(rank)
     colnames(df) <- c('Criteria')
