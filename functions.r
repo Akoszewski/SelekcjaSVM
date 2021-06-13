@@ -1,40 +1,85 @@
 library(e1071)
 
-SVM_RFE <- function(x, y, CRITERIA) {
-    # Rank <- data.frame(c(1:(length(CRITERIA))))
+SVM_RFE <- function(x, y, CRITERIA){
     rank <- c()
     p <- ncol(CRITERIA)
+    
     x_svm = x
     CRITERIA_SVM = CRITERIA
     y_svm = y
-    while (p >= 2) {
-        rank_criteria = matrix(0, 1, ncol(CRITERIA_SVM))
-        if (p %% 50 == 0) {
-            print(paste("SVMRFE in progress p =", p))
+    
+    min_value = 0 
+    max_value = 1
+    cros_number = length(y)
+    number = 2
+    
+while (p >= 2) {
+    rank_criteria = matrix(0, 1, ncol(CRITERIA_SVM))
+    for (i in seq(y[which.max(y)])){ 
+        y_svm[y==i] = 1
+        y_svm[y!=i] = -1
+        
+        tot_accuracy_vec <- c()
+        
+        for(j in seq(number-1)){
+            c_parameter = min_value+(max_value-min_value)/number*(j)
+            model <- svm(x_svm, y_svm, 
+                         kernel = "linear", scale=FALSE, class.weights = "inverse",
+                         type = "nu-classification", nu = c_parameter, cross = cros_number)
+            tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"])
         }
-        for (i in seq(y[which.max(y)])){ 
-            y_svm[y==i] = 1
-            y_svm[y!=i] = -1
-            model <- svm(x_svm, y_svm, kernel = "linear", scale=FALSE)
-            beta = drop(t(model$coefs)%*%x_svm[model$index,])
-            rank_criteria = rank_criteria+beta^2
+        
+        
+        max_accuracy_index <- which.max(tot_accuracy_vec)
+        c_parameter_optima = min_value+(max_value-min_value)/number*max_accuracy_index
+        tot_accuracy_vec <- c()
+        
+        for(k in seq(number)){
+            c_parameter = c_parameter_optima+(max_value-min_value)/10/number*(k-number/2)
+            model <- svm(x_svm, y_svm, 
+                         kernel = "linear", scale=FALSE, class.weights = "inverse",
+                         type = "C-classification", cost = c_parameter, cross = cros_number)
+            tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"], c_parameter)
         }
-        rank_criteria_average = rank_criteria/y[which.max(y)]
-        min_index <- which.min(rank_criteria_average)
-        # Rank[p, 1] <- t(CRITERIA_SVM[min_index])
-        rank <- c(t(CRITERIA_SVM[min_index]), rank)
-        #rank <- c(rank, t(CRITERIA_SVM[min_index]))
-        CRITERIA_SVM = CRITERIA_SVM[,-c(min_index)]
-        x_svm <- x_svm[,-c(min_index)]
-        p <- p - 1
+        
+        max_accuracy_index <- which.max(tot_accuracy_vec)
+        c_parameter_optima = c_parameter_optima+(max_value-min_value)/10/number*(max_accuracy_index-number/2)
+        tot_accuracy_vec <- c()
+        
+        for(m in seq(number)){
+            c_parameter = c_parameter_optima + (max_value-min_value)/100/number*(m-number/2)
+            model <- svm(x_svm, y_svm, 
+                         kernel = "linear", scale=FALSE, class.weights = "inverse",
+                         type = "C-classification", cost = c_parameter, cross = cros_number)
+            tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"], c_parameter)
+        }
+        
+        max_accuracy_index <- which.max(tot_accuracy_vec)
+        c_parameter_optima =c_parameter_optima + (max_value-min_value)/100/number*(max_accuracy_index-number/2)
+        
+        
+        model <- svm(x_svm, y_svm, 
+                     kernel = "linear", scale=FALSE, class.weights = "inverse",
+                     type = "C-classification", cost = c_parameter_optima, cross = cros_number)
+        
+        beta = drop(t(model$coefs)%*%x_svm[model$index,])
+        rank_criteria = rank_criteria+beta^2
     }
-    
-    rank <- c(as.character(CRITERIA_SVM[1]), rank)
-    
+    rank_criteria_average = rank_criteria/y[which.max(y)]
+    min_index <- which.min(rank_criteria_average)
+    # Rank[p, 1] <- t(CRITERIA_SVM[min_index])
+    rank <- c(t(CRITERIA_SVM[min_index]), rank)
+    #rank <- c(rank, t(CRITERIA_SVM[min_index]))
+    CRITERIA_SVM = CRITERIA_SVM[,-c(min_index)]
+    x_svm <- x_svm[,-c(min_index)]
+    p <- p - 1
+}       
+    rank <- c(t(CRITERIA_SVM[1]), rank)
     df <- data.frame(rank)
     colnames(df) <- c('Criteria')
     return (df)
 }
+
 
 FScoreSelection <- function(x, y, CRITERIA) {
     fscores <- c()
@@ -59,7 +104,6 @@ GetPrediction <- function(x, y, splitProportion = 0.6) {
     x_test   <-  x[-c(0:n_train),]
     y_train  <-  y[c(0:n_train)]
     y_test   <-  y[-c(0:n_train)]
-    # tu trzeba bedzie dac kfolda zeby dostac wiarygodne accuracy i wywolac w tej funkcji GetPrediction()
     model <- svm(x_train, y_train, kernel = "linear", scale=FALSE)
     # plot.svm(x_train, y_train, formula, fill = TRUE, grid = 50, slice = list(),symbolPalette = palette(), svSymbol = "x", dataSymbol = "o", ...)
     pred <- predict(model, x_test)
@@ -89,17 +133,4 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
     # print(prediction)
     print(paste("Accuracy (for", noOfFeatures, "features):", gsub(" ", "", paste(accuracy * 100, "%"))))
     return (accuracy)
-}
-
-GetAllAccuracies <- function(features) {
-    numsOfScores <- c()
-    accuracies <- c()
-    for (numOfScores in 2:nrow(features)) {
-        accuracy <- GetAccForBestFeatures(x, y, features$Criteria, numOfScores)
-        numsOfScores <- c(numsOfScores, numOfScores)
-        accuracies <- c(accuracies, accuracy)
-    }
-    df <- data.frame(numsOfScores, accuracies)
-    colnames(df) <- c('NumOfScores', 'Accuracy')
-    return (df)
 }
