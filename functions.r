@@ -20,6 +20,7 @@ SVM_RFE <- function(x, y, CRITERIA) {
         min_index <- which.min(rank_criteria_average)
         # Rank[p, 1] <- t(CRITERIA_SVM[min_index])
         rank <- c(t(CRITERIA_SVM[min_index]), rank)
+        #rank <- c(rank, t(CRITERIA_SVM[min_index]))
         CRITERIA_SVM = CRITERIA_SVM[,-c(min_index)]
         x_svm <- x_svm[,-c(min_index)]
         p <- p - 1
