@@ -42,9 +42,13 @@ FScoreSelection <- function(x, y, CRITERIA) {
     bestIndices <- c()
     # RANK <- data.frame(c(1:(length(CRITERIA))))
     for (col in 1:ncol(x)) {
-        x1 = x[which(y == 1), col]
-        x0 = x[which(y == 2), col]
-        fscore = abs(mean(x0) - mean(x1))/sqrt(var(x0) + var(x1))
+        classes = unique(y)
+        xj = c()
+        fscore = 0
+        for (class in classes) {
+            nj <- sum(y == class) # number of element of value class in vector y
+            fscore = fscore + nj * (mean(x[which(y == class)]) - mean(col))^2 / nj * var(x[which(y == class)])^2
+        }
         fscores <- append(fscores, fscore)
     }
     df <- data.frame(fscores, t(CRITERIA))

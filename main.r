@@ -18,7 +18,7 @@ y <- as.integer(data.matrix(DATA[,c(1)]))
 
 #norm_minmax = norm_minmax(x)
 
-RANK_return <- SVM_RFE(x, y, CRITERIA)
+# RANK_return <- SVM_RFE(x, y, CRITERIA)
 # print(RANK_return)
 
 #accuracySVM <- GetAccForBestFeatures(x, y, RANK_return$Criteria, 10)
