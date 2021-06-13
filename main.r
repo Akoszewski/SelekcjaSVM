@@ -22,39 +22,19 @@ y <- as.integer(data.matrix(DATA[,c(1)]))
 #accuracySVM <- GetAccForBestFeatures(x, y, RANK_return$Criteria, 10)
 
 fscores = FScoreSelection(x, y, CRITERIA)
-
-print('For best features:')
-accuracy <- GetAccForBestFeatures(x, y, fscores$Criteria, 10)
-accuracy <- GetAccForBestFeatures(x, y, fscores$Criteria, 100)
-accuracy <- GetAccForBestFeatures(x, y, fscores$Criteria, 500)
-accuracy <- GetAccForBestFeatures(x, y, fscores$Criteria, nrow(fscores))
-print('')
-print('For random features:')
 fscores_shuffled <- fscores[sample(nrow(fscores)),]
-accuracy <- GetAccForBestFeatures(x, y, fscores_shuffled$Criteria, 10)
-accuracy <- GetAccForBestFeatures(x, y, fscores_shuffled$Criteria, 100)
-accuracy <- GetAccForBestFeatures(x, y, fscores_shuffled$Criteria, 500)
-accuracy <- GetAccForBestFeatures(x, y, fscores_shuffled$Criteria, nrow(fscores_shuffled))
 
-numsOfScores <- c()
-accuracies <- c()
-for (numOfScores in 2:nrow(fscores)) {
-    accuracy <- GetAccForBestFeatures(x, y, fscores$Criteria, numOfScores)
-    numsOfScores <- c(numsOfScores, numOfScores)
-    accuracies <- c(accuracies, accuracy)
-}
-
-accuraciesDf<- data.frame(numsOfScores, accuracies)
-colnames(accuraciesDf) <- c('NumOfScores', 'Accuracy')
+accuraciesDf <- GetAllAccuracies(fscores)
+accuraciesRandomDf <- GetAllAccuracies(fscores_shuffled)
 
 wykres = ggplot() + 
    geom_line(data = accuraciesDf, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies fscore")) +
-   #geom_line(data = accuracies_conf, aes(x = LabelledDataSize, y = Accuracy, colour = "Accuracies random")) +
+   geom_line(data = accuraciesRandomDf, aes(x = LabelledDataSize, y = Accuracy, colour = "Accuracies random")) +
    xlab('Number of features') +
    ylab('Accuracy') + 
    labs(title="Fscore accuracy according to no of features")
 
-
+print(wykres)
 # # y[y == 2] <- 1
 # fscores2 <- do.fscore(
 #   x,

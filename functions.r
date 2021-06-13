@@ -55,6 +55,7 @@ GetPrediction <- function(x, y, splitProportion = 0.6) {
     x_test   <-  x[-c(0:n_train),]
     y_train  <-  y[c(0:n_train)]
     y_test   <-  y[-c(0:n_train)]
+    # tu trzeba bedzie dac kfolda zeby dostac wiarygodne accuracy i wywolac w tej funkcji GetPrediction()
     model <- svm(x_train, y_train, kernel = "linear", scale=FALSE)
     # plot.svm(x_train, y_train, formula, fill = TRUE, grid = 50, slice = list(),symbolPalette = palette(), svSymbol = "x", dataSymbol = "o", ...)
     pred <- predict(model, x_test)
@@ -84,4 +85,17 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
     # print(prediction)
     print(paste("Accuracy (for", noOfFeatures, "features):", gsub(" ", "", paste(accuracy * 100, "%"))))
     return (accuracy)
+}
+
+GetAllAccuracies <- function(features) {
+    numsOfScores <- c()
+    accuracies <- c()
+    for (numOfScores in 2:nrow(features)) {
+        accuracy <- GetAccForBestFeatures(x, y, features$Criteria, numOfScores)
+        numsOfScores <- c(numsOfScores, numOfScores)
+        accuracies <- c(accuracies, accuracy)
+    }
+    df <- data.frame(numsOfScores, accuracies)
+    colnames(df) <- c('NumOfScores', 'Accuracy')
+    return (df)
 }
