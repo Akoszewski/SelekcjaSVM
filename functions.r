@@ -47,7 +47,7 @@ FScoreSelection <- function(x, y, CRITERIA) {
         fscore = 0
         for (class in classes) {
             nj <- sum(y == class) # number of element of value class in vector y
-            fscore = fscore + nj * (mean(x[which(y == class)]) - mean(col))^2 / nj * var(x[which(y == class)])^2
+            fscore = fscore + nj * (mean(x[which(y == class)]) - mean(x[,col]))^2 / var(x[,col])^2
         }
         fscores <- append(fscores, fscore)
     }
@@ -98,7 +98,7 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
 GetAllAccuracies <- function(features) {
     numsOfScores <- c()
     accuracies <- c()
-    for (numOfScores in 2:nrow(features)) {
+    for (numOfScores in seq(2, nrow(features), by = 5)) {
         accuracy <- GetAccForBestFeatures(x, y, features$Criteria, numOfScores)
         numsOfScores <- c(numsOfScores, numOfScores)
         accuracies <- c(accuracies, accuracy)
