@@ -3,7 +3,8 @@ rm(list = ls())
 # library(Rdimtools)
 library("ggplot2");
 source("functions.r")
-DATA_SET <- read.csv("Datasets/Peptidome1/Peptidome1.txt", sep="\t", header=FALSE)
+# DATA_SET <- read.csv("Datasets/Peptidome1/Peptidome1.txt", sep="\t", header=FALSE)
+DATA_SET <- read.csv("Datasets/Leukemia/Leukemia_500.txt", sep="\t", header=FALSE)
 DATA_SET <- as.data.frame(t(as.matrix(DATA_SET)))
 CRITERIA <- DATA_SET[c(1),-c(1:2)]
 DATA <- DATA_SET[-c(1), -c(1)]
