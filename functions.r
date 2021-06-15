@@ -57,42 +57,70 @@ FScoreSelection <- function(x, y, CRITERIA) {
     return (df)
 }
 
-GetPrediction <- function(x, y, splitProportion = 0.6) {
-    n_train  <-  round(splitProportion * nrow(x))
-    x_train  <-  x[c(0:n_train),]
-    x_test   <-  x[-c(0:n_train),]
-    y_train  <-  y[c(0:n_train)]
-    y_test   <-  y[-c(0:n_train)]
-    # tu trzeba bedzie dac kfolda zeby dostac wiarygodne accuracy i wywolac w tej funkcji GetPrediction()
-    model <- svm(x_train, y_train, kernel = "linear", scale=FALSE)
-    # plot.svm(x_train, y_train, formula, fill = TRUE, grid = 50, slice = list(),symbolPalette = palette(), svSymbol = "x", dataSymbol = "o", ...)
-    pred <- predict(model, x_test)
-    df <- data.frame(pred, y_test)
-    colnames(df) <- c('Predicted', 'Actual')
-    return (df)
-}
-
-GetAccuracy <- function(prediction) {
-    correct_vals <- 0
-    for (row in 1:nrow(prediction)) {
-        if (round(prediction[row, 'Predicted']) == prediction[row, 'Actual']) {
-            correct_vals <- correct_vals + 1
-        }
-    }
-    return (correct_vals/nrow(prediction))
-}
-
 GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
     bestFeatures <- bestFeatures[1:noOfFeatures]
     DATA_F <- DATA[bestFeatures]
-
     x <- apply(as.matrix(DATA_F[,-c(1)]), 2, as.numeric)
 
-    prediction <- GetPrediction(x, y)
-    accuracy <- GetAccuracy(prediction)
-    # print(prediction)
-    print(paste("Accuracy (for", noOfFeatures, "features):", gsub(" ", "", paste(accuracy * 100, "%"))))
-    return (accuracy)
+    x_svm = x
+    y_svm = y
+    
+    min_value = 0 
+    max_value = 1
+    cros_number = length(y)
+    number = 2
+    
+    for (i in seq(y[which.max(y)])){ 
+        y_svm[y==i] = 1
+        y_svm[y!=i] = -1
+        
+        tot_accuracy_vec <- c()
+        
+        for(j in seq(number-1)){
+            c_parameter = min_value+(max_value-min_value)/number*(j)
+            model <- svm(x_svm, y_svm, 
+                         kernel = "linear", scale=FALSE, class.weights = "inverse",
+                         type = "nu-classification", nu = c_parameter, cross = cros_number)
+            tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"])
+        }
+        
+        
+        max_accuracy_index <- which.max(tot_accuracy_vec)
+        c_parameter_optima = min_value+(max_value-min_value)/number*max_accuracy_index
+        tot_accuracy_vec <- c()
+        
+        for(k in seq(number)){
+            c_parameter = c_parameter_optima+(max_value-min_value)/10/number*(k-number/2)
+            model <- svm(x_svm, y_svm, 
+                         kernel = "linear", scale=FALSE, class.weights = "inverse",
+                         type = "C-classification", cost = c_parameter, cross = cros_number)
+            tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"], c_parameter)
+        }
+        
+        max_accuracy_index <- which.max(tot_accuracy_vec)
+        c_parameter_optima = c_parameter_optima+(max_value-min_value)/10/number*(max_accuracy_index-number/2)
+        tot_accuracy_vec <- c()
+        
+        for(m in seq(number)){
+            c_parameter = c_parameter_optima + (max_value-min_value)/100/number*(m-number/2)
+            model <- svm(x_svm, y_svm, 
+                         kernel = "linear", scale=FALSE, class.weights = "inverse",
+                         type = "C-classification", cost = c_parameter, cross = cros_number)
+            tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"], c_parameter)
+        }
+        
+        max_accuracy_index <- which.max(tot_accuracy_vec)
+        c_parameter_optima = c_parameter_optima + (max_value-min_value)/100/number*(max_accuracy_index-number/2)
+        
+        model <- svm(x_svm, y_svm, 
+                     kernel = "linear", scale = FALSE, class.weights = "inverse",
+                     type = "C-classification", cost = c_parameter_optima, cross = cros_number)
+    }
+    
+    
+    print(paste("Accuracy (for", noOfFeatures, "features):",
+                gsub(" ", "", paste(model["tot.accuracy"] * 100, "%"))))
+    return (tot_accuracy_vec[max_accuracy_index])
 }
 
 GetAllAccuracies <- function(features) {
