@@ -70,6 +70,7 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
     cros_number = length(y)
     number = 2
     
+    accuracySum <- 0
     for (i in seq(y[which.max(y)])){ 
         y_svm[y==i] = 1
         y_svm[y!=i] = -1
@@ -80,7 +81,7 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
             c_parameter = min_value+(max_value-min_value)/number*(j)
             model <- svm(x_svm, y_svm, 
                          kernel = "linear", scale=FALSE, class.weights = "inverse",
-                         type = "nu-classification", nu = c_parameter, cross = cros_number)
+                         type = "C-classification", cost = c_parameter, cross = cros_number)
             tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"])
         }
         
@@ -115,18 +116,21 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
         model <- svm(x_svm, y_svm, 
                      kernel = "linear", scale = FALSE, class.weights = "inverse",
                      type = "C-classification", cost = c_parameter_optima, cross = cros_number)
+        
+        # accuracySum <- accuracySum + mean(model["tot.accuracy"])
     }
-    
+    # accuracy <- accuracySum/y[which.max(y)]
+    # TODO: odczytac accuracy biorac pod uwage ze jest wiele klas edit
     
     print(paste("Accuracy (for", noOfFeatures, "features):",
-                gsub(" ", "", paste(model["tot.accuracy"] * 100, "%"))))
-    return (tot_accuracy_vec[max_accuracy_index])
+                gsub(" ", "", paste(model["tot.accuracy"], "%"))))
+    return (model["tot.accuracy"])
 }
 
 GetAllAccuracies <- function(features) {
     numsOfScores <- c()
     accuracies <- c()
-    for (numOfScores in seq(2, nrow(features), by = 5)) {
+    for (numOfScores in seq(2, nrow(features), by = 50)) {
         accuracy <- GetAccForBestFeatures(x, y, features$Criteria, numOfScores)
         numsOfScores <- c(numsOfScores, numOfScores)
         accuracies <- c(accuracies, accuracy)
