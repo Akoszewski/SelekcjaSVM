@@ -19,7 +19,9 @@ y <- as.integer(data.matrix(DATA[,c(1)]))
 
 #norm_minmax = norm_minmax(x)
 
-RANK_return <- SVM_RFE(x, y, CRITERIA)
+featuresSvm <- SVM_RFE(x, y, CRITERIA)
+c_parameter = GridSearchC(x, y, min_value = 0, max_value = 1000, number = 10);
+featuresSvmOptimized <- SVM_RFE(x, y, CRITERIA, c_parameter)
 # print(RANK_return)
 
 #accuracySVM <- GetAccForBestFeatures(x, y, RANK_return$Criteria, 10)
@@ -29,13 +31,13 @@ fscores = FScoreSelection(x, y, CRITERIA)
 
 # space wynosi domyslnie 1 a w przypadku pominiecia max funkcja przechodzi do konca wektora
 accuraciesFscore <- GetAllAccuracies(fscores, space = 10, max = 300)
-#accuraciesRandom <- GetAllAccuracies(fscores_shuffled, space = 10, max = 300)
-accuraciesSVM <- GetAllAccuracies(RANK_return, space = 10, max = 300)
+accuraciesSVM <- GetAllAccuracies(featuresSvm, space = 10, max = 300)
+accuraciesSVMOptimized <- GetAllAccuracies(featuresSvmOptimized, space = 10, max = 300)
 
 
 wykres = ggplot() + 
    geom_line(data = accuraciesFscore, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies fscore")) +
-   #geom_line(data = accuraciesRandom, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies random")) +
+   geom_line(data = accuraciesSVMOptimized, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies SVM Optimized")) +
    geom_line(data = accuraciesSVM, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies SVM")) +
    xlab('Number of features') +
    ylab('Accuracy') + 

@@ -1,43 +1,38 @@
 library(e1071)
 
-SVM_RFE <- function(x, y, CRITERIA, min_value, max_value, number) {
+SVM_RFE <- function(x, y, CRITERIA, c_parameter = 1) {
     # Rank <- data.frame(c(1:(length(CRITERIA))))
     rank <- c()
-    p <- ncol(CRITERIA)+1
+    p <- ncol(CRITERIA)
     x_svm = x
     CRITERIA_SVM = CRITERIA
     y_svm = y
     cros_number = length(y) 	
     
-    if (p==ncol(CRITERIA)+1){
-        c_parameter = GridSearchC(x, y, min_value, max_value, number);
-        p = p-1
-    }
-    else{
-        while (p >= 2) {
+    while (p >= 2) {
         rank_criteria = matrix(0, 1, ncol(CRITERIA_SVM))
-            if (p %% 50 == 0) {
-                print(paste("SVMRFE in progress p =", p))
-            }
-            for (i in seq(y[which.max(y)])){ 
-                y_svm[y==i] = 1
-                y_svm[y!=i] = -1
-                model <- svm(x_svm, y_svm, 
-                             kernel = "linear", scale=FALSE, class.weights = "inverse",
-                             type = "C-classification", cost = c_parameter, cross = cros_number)
-                beta = drop(t(model$coefs)%*%x_svm[model$index,])
-                rank_criteria = rank_criteria+beta^2
-            }
-            rank_criteria_average = rank_criteria/y[which.max(y)]
-            min_index <- which.min(rank_criteria_average)
-            # Rank[p, 1] <- t(CRITERIA_SVM[min_index])
-            rank <- c(t(CRITERIA_SVM[min_index]), rank)
-            #rank <- c(rank, t(CRITERIA_SVM[min_index]))
-            CRITERIA_SVM = CRITERIA_SVM[,-c(min_index)]
-            x_svm <- x_svm[,-c(min_index)]
-            p <- p - 1
+        if (p %% 50 == 0) {
+            print(paste("SVMRFE in progress p =", p))
         }
+        for (i in seq(y[which.max(y)])){ 
+            y_svm[y==i] = 1
+            y_svm[y!=i] = -1
+            model <- svm(x_svm, y_svm, 
+                         kernel = "linear", scale=FALSE, class.weights = "inverse",
+                         type = "C-classification", cost = c_parameter, cross = cros_number)
+            beta = drop(t(model$coefs)%*%x_svm[model$index,])
+            rank_criteria = rank_criteria+beta^2
+        }
+        rank_criteria_average = rank_criteria/y[which.max(y)]
+        min_index <- which.min(rank_criteria_average)
+        # Rank[p, 1] <- t(CRITERIA_SVM[min_index])
+        rank <- c(t(CRITERIA_SVM[min_index]), rank)
+        #rank <- c(rank, t(CRITERIA_SVM[min_index]))
+        CRITERIA_SVM = CRITERIA_SVM[,-c(min_index)]
+        x_svm <- x_svm[,-c(min_index)]
+        p <- p - 1
     }
+    
     rank <- c(as.character(CRITERIA_SVM[1]), rank)
     
     df <- data.frame(rank)
@@ -45,9 +40,11 @@ SVM_RFE <- function(x, y, CRITERIA, min_value, max_value, number) {
     return (df)
 }
 
-GridSearchC()<- function(x, y, min_value, max_value, number){
+GridSearchC<- function(x, y, min_value, max_value, number){
 
     cros_number = length(y)
+    x_svm <- x
+    y_svm <- y
 
     for (i in seq(y[which.max(y)])){ 
         y_svm[y==i] = 1
