@@ -66,9 +66,9 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
     y_svm = y
     
     min_value = 0 
-    max_value = 1
+    max_value = 1000
     cros_number = length(y)
-    number = 2
+    number = 10
     
     accuracySum <- 0
     for (i in seq(y[which.max(y)])){ 
@@ -123,7 +123,7 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
     
     print(paste("Accuracy (for", noOfFeatures, "features):",
                 gsub(" ", "", paste(accuracy, "%"))))
-    return (model$tot.accuracy)
+    return (accuracy)
 }
 
 GetAllAccuracies <- function(features, space = 1, max = 0) {

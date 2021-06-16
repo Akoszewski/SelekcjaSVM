@@ -3,7 +3,7 @@ rm(list = ls())
 # library(Rdimtools)
 library("ggplot2");
 source("functions.r")
-# DATA_SET <- read.csv("Datasets/Peptidome1/Peptidome1.txt", sep="\t", header=FALSE)
+#DATA_SET <- read.csv("Datasets/Peptidome1/Peptidome1.txt", sep="\t", header=FALSE)
 DATA_SET <- read.csv("Datasets/Leukemia/Leukemia_500.txt", sep="\t", header=FALSE)
 DATA_SET <- as.data.frame(t(as.matrix(DATA_SET)))
 CRITERIA <- DATA_SET[c(1),-c(1:2)]
@@ -25,17 +25,17 @@ RANK_return <- SVM_RFE(x, y, CRITERIA)
 #accuracySVM <- GetAccForBestFeatures(x, y, RANK_return$Criteria, 10)
 
 fscores = FScoreSelection(x, y, CRITERIA)
-fscores_shuffled <- fscores[sample(nrow(fscores)),]
+#fscores_shuffled <- fscores[sample(nrow(fscores)),]
 
 # space wynosi domyslnie 1 a w przypadku pominiecia max funkcja przechodzi do konca wektora
 accuraciesFscore <- GetAllAccuracies(fscores, space = 10, max = 300)
-accuraciesRandom <- GetAllAccuracies(fscores_shuffled, space = 10, max = 300)
+#accuraciesRandom <- GetAllAccuracies(fscores_shuffled, space = 10, max = 300)
 accuraciesSVM <- GetAllAccuracies(RANK_return, space = 10, max = 300)
 
 
 wykres = ggplot() + 
    geom_line(data = accuraciesFscore, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies fscore")) +
-   geom_line(data = accuraciesRandom, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies random")) +
+   #geom_line(data = accuraciesRandom, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies random")) +
    geom_line(data = accuraciesSVM, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies SVM")) +
    xlab('Number of features') +
    ylab('Accuracy') + 
