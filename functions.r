@@ -7,6 +7,7 @@ SVM_RFE <- function(x, y, CRITERIA, min_value, max_value, number) {
     x_svm = x
     CRITERIA_SVM = CRITERIA
     y_svm = y
+    cros_number = length(y) 	
     
     if (p==ncol(CRITERIA)+1){
         c_parameter = GridSearchC(x, y, min_value, max_value, number);
