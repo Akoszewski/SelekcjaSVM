@@ -135,6 +135,8 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
                      kernel = "linear", scale = FALSE, class.weights = "inverse",
                      type = "C-classification", cost = c_parameter_optima, cross = cros_number)
         
+        aoc <- roc(response = class1.trainset$Class, predictor =as.numeric(class1.svm.pred))
+        
         accuracySum <- accuracySum + model$tot.accuracy
     }
     accuracy <- accuracySum/y[which.max(y)]
