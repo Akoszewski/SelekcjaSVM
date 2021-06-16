@@ -37,7 +37,10 @@ wykres = ggplot() +
    labs(title="Accuracy according to no of features")
 
 print(wykres)
+print("")
+print("")
 
+print("Wybrane wartości dokładności dla algorytmu SVMRFE z domyslnym parametrem kosztu:")
 accuracySvm10 <- GetAccForBestFeatures(x, y, featuresSvm$Criteria, 10)
 accuracySvm20 <- GetAccForBestFeatures(x, y, featuresSvm$Criteria, 20)
 accuracySvm50 <- GetAccForBestFeatures(x, y, featuresSvm$Criteria, 50)
@@ -45,6 +48,7 @@ accuracySvm100 <- GetAccForBestFeatures(x, y, featuresSvm$Criteria, 100)
 accuracySvm200 <- GetAccForBestFeatures(x, y, featuresSvm$Criteria, 200)
 accuracySvm500 <- GetAccForBestFeatures(x, y, featuresSvm$Criteria, 500)
 
+print("Wybrane wartości dokładności dla algorytmu SVMRFE z parametrem kosztu dobranym za pomocą Grid Search:")
 accuracySvmOptimized10 <- GetAccForBestFeatures(x, y, featuresSvmOptimized$Criteria, 10)
 accuracySvmOptimized20 <- GetAccForBestFeatures(x, y, featuresSvmOptimized$Criteria, 20)
 accuracySvmOptimized50 <- GetAccForBestFeatures(x, y, featuresSvmOptimized$Criteria, 50)
@@ -52,6 +56,7 @@ accuracySvmOptimized100 <- GetAccForBestFeatures(x, y, featuresSvmOptimized$Crit
 accuracySvmOptimized200 <- GetAccForBestFeatures(x, y, featuresSvmOptimized$Criteria, 200)
 accuracySvmOptimized500 <- GetAccForBestFeatures(x, y, featuresSvmOptimized$Criteria, 500)
 
+print("Wybrane wartości dokładności dla cech otrzymanych z pomocą fscore:")
 accuracyFscore10 <- GetAccForBestFeatures(x, y, fscores$Criteria, 10)
 accuracyFscore20 <- GetAccForBestFeatures(x, y, fscores$Criteria, 20)
 accuracyFscore50 <- GetAccForBestFeatures(x, y, fscores$Criteria, 50)
