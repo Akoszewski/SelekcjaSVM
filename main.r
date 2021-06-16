@@ -4,11 +4,11 @@ library("ggplot2");
 source("functions.r")
 
 # zbior danych z dwiema klasami
-# DATA_SET <- read.csv("Datasets/Peptidome1/Peptidome1.txt", sep="\t", header=FALSE)
+DATA_SET <- read.csv("Datasets/Peptidome1/Peptidome1.txt", sep="\t", header=FALSE)
 
 # zbior z wieloma klasami
 # DATA_SET <- read.csv("Datasets/Leukemia/Leukemia.txt", sep="\t", header=FALSE)
-DATA_SET <- read.csv("Datasets/Leukemia/Leukemia_500.txt", sep="\t", header=FALSE)
+# DATA_SET <- read.csv("Datasets/Leukemia/Leukemia_500.txt", sep="\t", header=FALSE)
 
 DATA_SET <- as.data.frame(t(as.matrix(DATA_SET)))
 CRITERIA <- DATA_SET[c(1),-c(1:2)]
