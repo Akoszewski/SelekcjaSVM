@@ -130,44 +130,7 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
         y_svm[y==i] = 1
         y_svm[y!=i] = -1
         
-        tot_accuracy_vec <- c()
-        
-        for(j in seq(number-1)){
-            c_parameter = min_value+(max_value-min_value)/number*(j)
-            model <- svm(x_svm, y_svm, 
-                         kernel = "linear", scale=FALSE, class.weights = "inverse",
-                         type = "C-classification", cost = c_parameter, cross = cros_number)
-            tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"])
-        }
-        
-        
-        max_accuracy_index <- which.max(tot_accuracy_vec)
-        c_parameter_optima = min_value+(max_value-min_value)/number*max_accuracy_index
-        tot_accuracy_vec <- c()
-        
-        for(k in seq(number)){
-            c_parameter = c_parameter_optima+(max_value-min_value)/10/number*(k-number/2)
-            model <- svm(x_svm, y_svm, 
-                         kernel = "linear", scale=FALSE, class.weights = "inverse",
-                         type = "C-classification", cost = c_parameter, cross = cros_number)
-            tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"], c_parameter)
-        }
-        
-        max_accuracy_index <- which.max(tot_accuracy_vec)
-        c_parameter_optima = c_parameter_optima+(max_value-min_value)/10/number*(max_accuracy_index-number/2)
-        tot_accuracy_vec <- c()
-        
-        for(m in seq(number)){
-            c_parameter = c_parameter_optima + (max_value-min_value)/100/number*(m-number/2)
-            model <- svm(x_svm, y_svm, 
-                         kernel = "linear", scale=FALSE, class.weights = "inverse",
-                         type = "C-classification", cost = c_parameter, cross = cros_number)
-            tot_accuracy_vec = c(tot_accuracy_vec, model["tot.accuracy"], c_parameter)
-        }
-        
-        max_accuracy_index <- which.max(tot_accuracy_vec)
-        c_parameter_optima = c_parameter_optima + (max_value-min_value)/100/number*(max_accuracy_index-number/2)
-        
+        c_parameter_optima <- GridSearchC(x_svm, y_svm, min_value = 0, max_value = 1000, number = 10)
         model <- svm(x_svm, y_svm, 
                      kernel = "linear", scale = FALSE, class.weights = "inverse",
                      type = "C-classification", cost = c_parameter_optima, cross = cros_number)
