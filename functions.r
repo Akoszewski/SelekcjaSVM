@@ -110,8 +110,8 @@ FScoreSelection <- function(x, y, CRITERIA) {
 
 GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
     bestFeatures <- bestFeatures[1:noOfFeatures]
-    DATA_F <- DATA[bestFeatures]
-    x <- apply(as.matrix(DATA_F[,-c(1)]), 2, as.numeric)
+    DATA_SELECTED <- DATA[bestFeatures]
+    x <- apply(as.matrix(DATA_SELECTED[,-c(1)]), 2, as.numeric)
 
     x_svm = x
     y_svm = y
