@@ -117,20 +117,22 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
                      kernel = "linear", scale = FALSE, class.weights = "inverse",
                      type = "C-classification", cost = c_parameter_optima, cross = cros_number)
         
-        # accuracySum <- accuracySum + mean(model["tot.accuracy"])
+        accuracySum <- accuracySum + model$tot.accuracy
     }
-    # accuracy <- accuracySum/y[which.max(y)]
-    # TODO: odczytac accuracy biorac pod uwage ze jest wiele klas edit
+    accuracy <- accuracySum/y[which.max(y)]
     
     print(paste("Accuracy (for", noOfFeatures, "features):",
-                gsub(" ", "", paste(model["tot.accuracy"], "%"))))
-    return (model["tot.accuracy"])
+                gsub(" ", "", paste(accuracy, "%"))))
+    return (model$tot.accuracy)
 }
 
-GetAllAccuracies <- function(features) {
+GetAllAccuracies <- function(features, space = 1, max = 0) {
     numsOfScores <- c()
     accuracies <- c()
-    for (numOfScores in seq(2, nrow(features), by = 50)) {
+    if (max == 0) {
+        max = nrow(features)
+    }
+    for (numOfScores in seq(2, max, by = space)) {
         accuracy <- GetAccForBestFeatures(x, y, features$Criteria, numOfScores)
         numsOfScores <- c(numsOfScores, numOfScores)
         accuracies <- c(accuracies, accuracy)

@@ -27,13 +27,14 @@ RANK_return <- SVM_RFE(x, y, CRITERIA)
 fscores = FScoreSelection(x, y, CRITERIA)
 fscores_shuffled <- fscores[sample(nrow(fscores)),]
 
-accuracies <- GetAllAccuracies(fscores)
-accuraciesRandom <- GetAllAccuracies(fscores_shuffled)
-accuraciesSVM <- GetAllAccuracies(RANK_return)
+# space wynosi domyslnie 1 a w przypadku pominiecia max funkcja przechodzi do konca wektora
+accuraciesFscore <- GetAllAccuracies(fscores, space = 10, max = 300)
+accuraciesRandom <- GetAllAccuracies(fscores_shuffled, space = 10, max = 300)
+accuraciesSVM <- GetAllAccuracies(RANK_return, space = 10, max = 300)
 
 
 wykres = ggplot() + 
-   geom_line(data = accuracies, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies fscore")) +
+   geom_line(data = accuraciesFscore, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies fscore")) +
    geom_line(data = accuraciesRandom, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies random")) +
    geom_line(data = accuraciesSVM, aes(x = NumOfScores, y = Accuracy, colour = "Accuracies SVM")) +
    xlab('Number of features') +
