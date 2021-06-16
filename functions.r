@@ -1,7 +1,6 @@
 library(e1071)
 
 SVM_RFE <- function(x, y, CRITERIA, c_parameter = 1) {
-    # Rank <- data.frame(c(1:(length(CRITERIA))))
     rank <- c()
     p <- ncol(CRITERIA)
     x_svm = x
@@ -25,9 +24,7 @@ SVM_RFE <- function(x, y, CRITERIA, c_parameter = 1) {
         }
         rank_criteria_average = rank_criteria/y[which.max(y)]
         min_index <- which.min(rank_criteria_average)
-        # Rank[p, 1] <- t(CRITERIA_SVM[min_index])
         rank <- c(t(CRITERIA_SVM[min_index]), rank)
-        #rank <- c(rank, t(CRITERIA_SVM[min_index]))
         CRITERIA_SVM = CRITERIA_SVM[,-c(min_index)]
         x_svm <- x_svm[,-c(min_index)]
         p <- p - 1
@@ -95,7 +92,6 @@ FScoreSelection <- function(x, y, CRITERIA) {
     fscores <- c()
     bestFscores <- c()
     bestIndices <- c()
-    # RANK <- data.frame(c(1:(length(CRITERIA))))
     for (col in 1:ncol(x)) {
         classes = unique(y)
         xj = c()
@@ -134,13 +130,9 @@ GetAccForBestFeatures <- function(x, y, bestFeatures, noOfFeatures) {
         model <- svm(x_svm, y_svm, 
                      kernel = "linear", scale = FALSE, class.weights = "inverse",
                      type = "C-classification", cost = c_parameter_optima, cross = cros_number)
-        
-        aoc <- roc(response = class1.trainset$Class, predictor =as.numeric(class1.svm.pred))
-        
         accuracySum <- accuracySum + model$tot.accuracy
     }
     accuracy <- accuracySum/y[which.max(y)]
-    
     print(paste("Accuracy (for", noOfFeatures, "features):",
                 gsub(" ", "", paste(accuracy, "%"))))
     return (accuracy)
